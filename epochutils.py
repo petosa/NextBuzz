@@ -3,19 +3,19 @@ import pytz
 
 # Returns the given epoch's hour clock time
 def epoch_to_hour(e):
-    return int(pytz.timezone("US/Eastern").localize(datetime.datetime.fromtimestamp(e)).strftime('%H'))
+    return int(datetime.datetime.utcfromtimestamp(e).replace(tzinfo=pytz.utc).astimezone(pytz.timezone("US/Eastern")).strftime('%H'))
 
 # Returns the given epoch's minute clock time
 def epoch_to_minute(e):
-    return int(pytz.timezone("US/Eastern").localize(datetime.datetime.fromtimestamp(e)).strftime('%M'))
+    return int(datetime.datetime.utcfromtimestamp(e).replace(tzinfo=pytz.utc).astimezone(pytz.timezone("US/Eastern")).strftime('%M'))
 
 # Returns the given epoch's day of week
 def epoch_to_day_of_week(e):
-    return pytz.timezone("US/Eastern").localize(datetime.datetime.fromtimestamp(e)).strftime('%A')
+    return datetime.datetime.utcfromtimestamp(e).replace(tzinfo=pytz.utc).astimezone(pytz.timezone("US/Eastern")).strftime('%A')
 
 # Returns the given epoch's month as int
 def epoch_to_month(e):
-    return int(pytz.timezone("US/Eastern").localize(datetime.datetime.fromtimestamp(e)).strftime('%m'))
+    return int(datetime.datetime.utcfromtimestamp(e).replace(tzinfo=pytz.utc).astimezone(pytz.timezone("US/Eastern")).strftime('%m'))
 
 # Returns the given epoch's semester
 def epoch_to_semester(e):
@@ -27,7 +27,7 @@ def epoch_to_semester(e):
     return "spring"
 
 def epoch_to_time_as_number(e):
-    return int(pytz.timezone("US/Eastern").localize(datetime.datetime.fromtimestamp(e)).strftime('%H%M'))
+    return int(datetime.datetime.utcfromtimestamp(e).replace(tzinfo=pytz.utc).astimezone(pytz.timezone("US/Eastern")).strftime('%H%M'))
 
 def epoch_is_between_classes(e):
     dow = epoch_to_day_of_week(e)
