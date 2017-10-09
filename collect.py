@@ -14,7 +14,7 @@ while True:
 
         with open("predictions.csv", "a") as file:
             if os.stat("predictions.csv").st_size == 0:
-                file.write("timestamp,stop,route,kmperhr,layover,isDeparture,predictedArrival,secondsToArrival,hour,timeAsInt,betweenClass,dayOfWeek,month,semester,shift,isWeekend,temperature,pressure,humidity,visibility,weather,wind,cloudCoverage\n")
+                file.write("timestamp,stop,route,kmperhr,busID,numBuses,busLat,busLong,layover,isDeparture,predictedArrival,secondsToArrival,hour,timeAsInt,betweenClass,dayOfWeek,month,semester,shift,isWeekend,temperature,pressure,humidity,visibility,weather,wind,cloudCoverage\n")
 
         weather = requests.get("https://api.openweathermap.org/data/2.5/weather?q=atlanta&APPID=00c4c655fa601a48dc5bf4f34c4ce86a")
 
@@ -58,10 +58,15 @@ while True:
                 vehicles = xmltodict.parse(r2.text)["body"]["vehicle"]
                 if type(vehicles) != list:
                     vehicles = [vehicles]
+                numbuses = len(vehicles)
                 kmperhr = -1
+                buslat = -1
+                buslong = -1
                 for v in vehicles:
                     if bus_number == v["@id"]:
                         kmperhr = v["@speedKmHr"]
+                        buslat = v["@lat"]
+                        buslong = v["@lon"]
 
                 # Next is weather data
                 weather_name = None
@@ -74,6 +79,10 @@ while True:
                 row.append(stop_name) # Stop being approached
                 row.append(route_name) # Red, blue...
                 row.append(kmperhr) # Speed of bus
+                row.append(bus_number) # Bus ID
+                row.append(numbuses) # Number of buses
+                row.append(buslat) # Latitude of bus
+                row.append(buslong) # Longitude of bus
                 row.append(layover) # Is this bus' prediction inacurrate?
                 row.append(is_departure) # Is the bus waiting?
                 row.append(arrival_epoch) # Predicted timestamp of arrival
