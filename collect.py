@@ -109,4 +109,5 @@ while True:
                 log.log("Logged for " + route_name + " at " + stop_name)
 
     except Exception as e:
+        log.log("Exception:")
         log.log(traceback.format_exc())
