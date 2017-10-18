@@ -2,10 +2,9 @@ import xmltodict
 import requests
 import time
 import os
+import epochutils
 import log
 import traceback
-
-print("v2")
 
 all_routes = ["red", "blue", "green", "trolley", "night", "tech"]
 
@@ -15,7 +14,7 @@ while True:
 
         with open("predictions.csv", "a") as file:
             if os.stat("predictions.csv").st_size == 0:
-                file.write("timestamp,stop,route,kmperhr,busID,numBuses,busLat,busLong,layover,isDeparture,predictedArrival,secondsToArrival,temperature,pressure,humidity,visibility,weather,wind,cloudCoverage\n")
+                file.write("timestamp,stop,route,kmperhr,busID,numBuses,busLat,busLong,layover,isDeparture,predictedArrival,secondsToArrival,hour,timeAsInt,betweenClass,dayOfWeek,month,semester,shift,isWeekend,temperature,pressure,humidity,visibility,weather,wind,cloudCoverage\n")
 
         weather = requests.get("https://api.openweathermap.org/data/2.5/weather?q=atlanta&APPID=00c4c655fa601a48dc5bf4f34c4ce86a")
 
@@ -88,6 +87,14 @@ while True:
                 row.append(is_departure) # Is the bus waiting?
                 row.append(arrival_epoch) # Predicted timestamp of arrival
                 row.append(seconds_arrival) # Seconds to arrival prediction
+                row.append(epochutils.epoch_to_hour(current_epoch)) # 0-23
+                row.append(epochutils.epoch_to_time_as_number(current_epoch)) # 1:03 -> 103
+                row.append(epochutils.epoch_is_between_classes(current_epoch)) # Time is in a class gap
+                row.append(epochutils.epoch_to_day_of_week(current_epoch)) # Monday, Tuesday...
+                row.append(epochutils.epoch_to_month(current_epoch)) # 1-12
+                row.append(epochutils.epoch_to_semester(current_epoch)) # spring, summer, fall
+                row.append(epochutils.epoch_to_shift(current_epoch, route_name)) # look up bus schedules
+                row.append(epochutils.epoch_is_weekend(current_epoch)) # Sunday or Saturday?
                 row.append(weather_json["main"]["temp"]) # Temp in kelvin
                 row.append(weather_json["main"]["pressure"]) # Air pressure
                 row.append(weather_json["main"]["humidity"]) # Air humidity
