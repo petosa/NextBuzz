@@ -15,12 +15,12 @@ FIELD = "abserror"
 DISTINGUISH = "route"
 # Cluster sampling
 SAMPLE_HIERARCHY = ["route", "stop", "session"] # Cluster granularity: approach
-NUM_CLUSTERS = 50
+NUM_CLUSTERS = 100
 
 
 
 # Read in data, drop all duplicates.
-df = pd.read_csv("predictions_new.csv")
+df = pd.read_csv("big_predictions.csv")
 before = df.size
 df.drop_duplicates(subset=["timestamp", "route", "stop"], keep="first", inplace=True)
 print("Removed " + str(before - df.size) + " duplicates.")
@@ -72,7 +72,9 @@ df["abserror"] = abs(df["error"])
 df["sqerror"] = df["error"] * df["error"] # Squared error
 
 # Calculate the distance of each bus from its stop.
-response = requests.get("https://gtbuses.herokuapp.com/agencies/georgia-tech/routes")
+session = requests.Session()
+session.headers.update({"User-Agent": "NextBuzz"})
+response = session.get("https://gtbuses.herokuapp.com/agencies/georgia-tech/routes")
 routes = xmltodict.parse(response.text)["body"]["route"]
 sched = {}
 for route in routes:
@@ -110,19 +112,18 @@ for key in key_sample:
     frame = sample_grouped.get_group(key)
     plt.title("Segmented Approach " + str(key))
     plt.plot(frame["timestamp"], frame["secondsToArrival"], linewidth=3)
-    plt.plot(frame["timestamp"], frame["actualSecondsToArrival"], linewidth=3, c="y")
-    #plt.plot(frame["timestamp"], frame["distance"].rolling(1).mean(), linewidth=3, c="g")
+    #plt.plot(frame["timestamp"], frame["actualSecondsToArrival"], linewidth=3, c="y")
+    #plt.plot(frame["timestamp"], frame["distance"], linewidth=2, c="b")
     plt.xlabel("Timestamp")
-    plt.ylabel("Seconds")
+    plt.ylabel("Distance")
     plt.legend()
 
     for index, row in frame.iterrows():
-        pass
         if row["newApproach"]:
-            plt.axvline(x=row["timestamp"], c="r")
+            plt.axvline(x=row["timestamp"], linewidth=2, c="r")
         if row["busChange"]:
-            plt.axvline(x=row["timestamp"], c="g",linestyle='--')
-    plt.show()
+            plt.axvline(x=row["timestamp"], linewidth=2, c="g",linestyle='--')
+    #plt.show()
 
 
 # Plot it

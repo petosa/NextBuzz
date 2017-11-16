@@ -5,7 +5,10 @@ import os
 import log
 import traceback
 
-print("v2")
+print("v3")
+
+session = requests.Session()
+session.headers.update({"User-Agent": "NextBuzz"})
 
 all_routes = ["red", "blue", "green", "trolley", "night", "tech"]
 
@@ -17,7 +20,7 @@ while True:
             if os.stat("predictions.csv").st_size == 0:
                 file.write("timestamp,stop,route,kmperhr,busID,numBuses,busLat,busLong,layover,isDeparture,predictedArrival,secondsToArrival,temperature,pressure,humidity,visibility,weather,wind,cloudCoverage\n")
 
-        weather = requests.get("https://api.openweathermap.org/data/2.5/weather?q=atlanta&APPID=00c4c655fa601a48dc5bf4f34c4ce86a")
+        weather = session.get("https://api.openweathermap.org/data/2.5/weather?q=atlanta&APPID=00c4c655fa601a48dc5bf4f34c4ce86a")
 
         if weather.status_code != 200:
             continue
@@ -26,8 +29,8 @@ while True:
 
         for route in all_routes:
             time.sleep(2)
-            r = requests.get("https://gtbuses.herokuapp.com/agencies/georgia-tech/routes/" + route + "/predictions")
-            r2 = requests.get("https://gtbuses.herokuapp.com/agencies/georgia-tech/routes/" + route + "/vehicles")
+            r = session.get("https://gtbuses.herokuapp.com/agencies/georgia-tech/routes/" + route + "/predictions")
+            r2 = session.get("https://gtbuses.herokuapp.com/agencies/georgia-tech/routes/" + route + "/vehicles")
 
             if r.status_code != 200 or r2.status_code != 200:
                 continue
