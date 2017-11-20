@@ -8,7 +8,7 @@ import traceback
 print("v3")
 
 session = requests.Session()
-session.headers.update({"User-Agent": "NextBuzz"})
+session.headers.update({"User-Agent": "NextBuzz (nick.petosa@gmail.com)"})
 
 all_routes = ["red", "blue", "green", "trolley", "night", "tech"]
 
