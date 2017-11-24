@@ -69,12 +69,12 @@ def heuristic(df, session_thresh, approach_spike, single_bus_spike, activation_b
 # Engineers features related to time.
 def temporal(df):
     df = df.copy()
-    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
-    df["timestamp"] = df["timestamp"].dt.tz_localize("UTC").dt.tz_convert("US/Eastern")
-    df["dayOfWeek"] = df["timestamp"].dt.dayofweek # Monday=0, Sunday=6
-    df["hour"] = df["timestamp"].dt.hour
-    df["month"] = df["timestamp"].dt.month
-    df["minutesIntoDay"] = df["timestamp"].dt.hour*60 + df["timestamp"].dt.minute
+    df["timestamp_real"] = pd.to_datetime(df["timestamp"], unit="s")
+    df["timestamp_real"] = df["timestamp_real"].dt.tz_localize("UTC").dt.tz_convert("US/Eastern")
+    df["dayOfWeek"] = df["timestamp_real"].dt.dayofweek # Monday=0, Sunday=6
+    df["hour"] = df["timestamp_real"].dt.hour
+    df["month"] = df["timestamp_real"].dt.month
+    df["minutesIntoDay"] = df["timestamp_real"].dt.hour*60 + df["timestamp_real"].dt.minute
     df["isWeekend"] = df["dayOfWeek"] >= 5
     df["morningRush"] = (df["dayOfWeek"] <= 4) & (df["minutesIntoDay"] >= 420) & (df["minutesIntoDay"] <= 600)
     df["eveningRush"] = (df["dayOfWeek"] <= 4) & (df["minutesIntoDay"] >= 210) & (df["minutesIntoDay"] <= 405)

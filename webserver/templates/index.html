@@ -1,0 +1,67 @@
+<link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+<script
+   src="https://code.jquery.com/jquery-3.1.1.min.js"
+   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+   crossorigin="anonymous"></script>
+<script src="semantic/dist/semantic.min.js"></script>
+<script src="js/script.js"></script>
+<body class="template">
+   <div class="ui massive fixed inverted borderless menu">
+      <div class="ui container">
+         <a class="header item" href="#">NextBuzz</a>
+      </div>
+   </div>
+   <div class="ui main center aligned text container">
+      <div class="ui left aligned yellow segment">
+         <h1 class="ui huge header">
+            NextBuzz
+         </h1>
+         <h3>Using machine learning to improve Georgia Tech bus arrival predictions.</h3>
+      </div>
+      <div class="ui left aligned inverted segment">
+         <div class="ui equal width grid">
+            <div class="column">
+               <select onchange="changeFunc()" id="stopSelect" class="ui huge search dropdown three wide">
+                  <option value="">Select a stop</option>
+                  {% for key in stops %}
+                  <option>{{key}}</option>
+                  {% endfor %}
+               </select>
+            </div>
+            <div class="column right aligned">
+               <button onclick="geoFindMe()" class="circular ui yellow huge icon button"  data-tooltip="Use my location to find nearest stop.">
+               <i class="icon marker"></i>
+               </button>
+            </div>
+         </div>
+         <table id="timeTable" class="ui large selectable inverted table">
+            <thead>
+               <tr>
+                  <th>Route</th>
+                  <th>Smart Prediction</th>
+                  <th class="right aligned">Original Prediction</th>
+               </tr>
+            </thead>
+            <tbody>
+            </tbody>
+         </table>
+      </div>
+   </div>
+   <style type="text/css">
+      .main.container {
+      margin-top: 7em;
+      }
+      p.lead {
+      font-size: 1.3em;
+      color: #333333;
+      line-height: 1.4;
+      font-weight: 300;
+      }
+   </style>
+</body>
+<script>
+   $('.ui.dropdown')
+   .dropdown()
+   ;
+   
+</script>

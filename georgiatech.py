@@ -1,5 +1,6 @@
 import requests
 import xmltodict
+from collections import defaultdict
 
 class GeorgiaTech(object):
 
@@ -13,13 +14,15 @@ class GeorgiaTech(object):
             self.stop_coords = {}
             for route in routes:
                 for stop in route["stop"]:
-                    self.stop_coords[(route["@tag"], stop["@tag"])] = ((float(route["@latMin"]) + float(route["@latMax"]))/2, (float(route["@lonMin"]) + float(route["@lonMax"]))/2)
-            print("There are " + str(len(self.stop_coords.keys())) + " route/stop combinations at GT.")
+                    if not str(stop["@tag"]) in self.stop_names[str(stop["@title"])]:
+                        self.stop_names[str(stop["@title"])].append(str(stop["@tag"]))
+                    self.stop_coords[(route["@tag"], stop["@tag"])] = (float(stop["@lat"]), float(stop["@lon"]))
         except:
             print("You are offline - cannot load stop_coords")
 
     # CONSTANTS
     stop_coords = {} # Auto-populated
+    stop_names = defaultdict(list) # Auto-populated
     all_routes = ["red", "blue", "green", "trolley", "night", "tech"]
     route_colors = {
         "red": "#FE1C00",

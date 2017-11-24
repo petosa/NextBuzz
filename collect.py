@@ -14,7 +14,7 @@ session = requests.Session()
 session.headers.update({"User-Agent": "NextBuzz (nick.petosa@gmail.com)"})
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(BASE_DIR, "../database.db")
+db_path = os.path.join(BASE_DIR, "database.db")
 conn = sqlite3.connect(db_path)
 
 gt = GeorgiaTech()
