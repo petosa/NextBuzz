@@ -5,3 +5,6 @@ __pycache__/
 system.log
 node_modules/
 *.csv
+*.db
+*.pkl
+webserver/semantic/
