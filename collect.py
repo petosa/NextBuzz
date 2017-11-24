@@ -4,13 +4,21 @@ import time
 import os
 import log
 import traceback
+from georgiatech import GeorgiaTech
+import sqlite3
+import os
 
-print("v3")
+print("v4")
 
 session = requests.Session()
 session.headers.update({"User-Agent": "NextBuzz (nick.petosa@gmail.com)"})
 
-all_routes = ["red", "blue", "green", "trolley", "night", "tech"]
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE_DIR, "../database.db")
+conn = sqlite3.connect(db_path)
+
+gt = GeorgiaTech()
+header = "timestamp,stop,route,kmperhr,busID,numBuses,busLat,busLong,layover,isDeparture,predictedArrival,secondsToArrival,temperature,pressure,humidity,visibility,weather,wind,cloudCoverage"
 
 while True:
     try:
@@ -18,7 +26,8 @@ while True:
 
         with open("predictions.csv", "a") as file:
             if os.stat("predictions.csv").st_size == 0:
-                file.write("timestamp,stop,route,kmperhr,busID,numBuses,busLat,busLong,layover,isDeparture,predictedArrival,secondsToArrival,temperature,pressure,humidity,visibility,weather,wind,cloudCoverage\n")
+                file.write(header)
+                file.write("\n")
 
         weather = session.get("https://api.openweathermap.org/data/2.5/weather?q=atlanta&APPID=00c4c655fa601a48dc5bf4f34c4ce86a")
 
@@ -27,7 +36,7 @@ while True:
 
         weather_json = weather.json()
 
-        for route in all_routes:
+        for route in gt.all_routes:
             time.sleep(2)
             r = session.get("https://gtbuses.herokuapp.com/agencies/georgia-tech/routes/" + route + "/predictions")
             r2 = session.get("https://gtbuses.herokuapp.com/agencies/georgia-tech/routes/" + route + "/vehicles")
@@ -98,6 +107,21 @@ while True:
                 row.append(weather_name) # cloudy, rainy, sunny...
                 row.append(weather_json["wind"]["speed"]) # Wind speed
                 row.append(weather_json["clouds"]["all"]) # Cloud coverage
+
+                output = "("
+                for item in row:
+                    if isinstance(item, basestring):
+                        output += "\'" + str(item) + "\',"
+                    else:
+                        output += str(item) + ","
+                output = output[0: -1]
+                output += ")"
+
+                query = "INSERT INTO NEXTBUS VALUES " + output
+                print(query)
+
+                c = conn.cursor()
+                c.execute(query)
 
                 with open("predictions.csv", "a") as file:
                     file.write(str(row)[1:len(str(row))-1].replace(" ","").replace("\'","") + "\n")

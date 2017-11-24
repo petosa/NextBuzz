@@ -31,7 +31,7 @@ def rolling_kfold(data, learner, config, partitions=5, window=3):
         right = window_start + partition_size*(window)
         training_set = data.iloc[left:middle]
         testing_set = data.iloc[(middle + 1):right]
-        nbtr_err, nbte_err, tr_err, te_err = learn(training_set, testing_set, learner, config["kbest"], config["do_pca"], config["pca_only"])
+        model, nbtr_err, nbte_err, tr_err, te_err = learn(training_set, testing_set, learner, config["kbest"], config["do_pca"], config["pca_only"])
         window_start += partition_size
         nbtr_final = nbtr_final.append(pd.DataFrame(nbtr_err, index=[0]))
         nbte_final = nbte_final.append(pd.DataFrame(nbte_err, index=[0]))
@@ -56,7 +56,18 @@ def train_test_split(data, learner, config, percent_train=.80):
     bottom = data.shape[0]
     training_set = data.iloc[top:middle,:]
     testing_set = data.iloc[middle + 1:bottom,:]
-    learn(training_set, testing_set, learner, config["kbest"], config["do_pca"], config["pca_only"])
+    model, nbtr_err, nbte_err, tr_err, te_err = learn(training_set, testing_set, learner, config["kbest"], config["do_pca"], config["pca_only"])
+    print("*"*20)
+    print("NEXTBUS TRAIN FINAL")
+    print(nbtr_err)
+    print("TRAIN FINAL")
+    print(tr_err)
+    print("NEXTBUS TEST FINAL")
+    print(nbte_err)
+    print("TEST FINAL")
+    print(te_err)
+    print("*"*20)
+    return model
 
 def learn(train, test, learner, kbest, do_pca, pca_only):
 
@@ -93,7 +104,7 @@ def learn(train, test, learner, kbest, do_pca, pca_only):
     guess = learner.predict(test_left)
     te_err = error_report("TEST SET", test_right, guess)
 
-    return nbtr_err, nbte_err, tr_err, te_err
+    return learner, nbtr_err, nbte_err, tr_err, te_err
 
 def error_report(title, actual, predicted):
     err = {}

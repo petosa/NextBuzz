@@ -20,6 +20,7 @@ class GeorgiaTech(object):
 
     # CONSTANTS
     stop_coords = {} # Auto-populated
+    all_routes = ["red", "blue", "green", "trolley", "night", "tech"]
     route_colors = {
         "red": "#FE1C00",
         "green": "#0FCB66",
