@@ -7,5 +7,4 @@ node_modules/
 *.csv
 *.db
 *.pkl
-webserver/semantic/
 venv/
