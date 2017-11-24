@@ -55,11 +55,6 @@ def heuristic(df, session_thresh, approach_spike, single_bus_spike, activation_b
     df["percenterror"] = df["abserror"]/(df["actualSecondsToArrival"] + .01) # Avoid divide by 0 error
     df["sqerror"] = df["error"] * df["error"] # Squared error
 
-    print("NextBus mean absolute error: " + str(df["abserror"].mean()))
-    print("NextBus std absolute error: " + str(df["abserror"].std()))
-    print("NextBus sum of squared errors: " + str(df["sqerror"].sum()))
-    print("NextBus root mean square error: " + str(math.sqrt(df["sqerror"].mean())))
-
     # Evaluate accuracy of approach components. Validate our heuristic.
     def validate(numBuses, busChange, newApproach, delta):
         if numBuses > 1:
@@ -80,11 +75,13 @@ def temporal(df):
     df["hour"] = df["timestamp"].dt.hour
     df["month"] = df["timestamp"].dt.month
     df["minutesIntoDay"] = df["timestamp"].dt.hour*60 + df["timestamp"].dt.minute
+    df["isWeekend"] = df["dayOfWeek"] >= 5
+    df["morningRush"] = (df["dayOfWeek"] <= 4) & (df["minutesIntoDay"] >= 420) & (df["minutesIntoDay"] <= 600)
+    df["eveningRush"] = (df["dayOfWeek"] <= 4) & (df["minutesIntoDay"] >= 210) & (df["minutesIntoDay"] <= 405)
     return df
 
 # Engineers features related to Georgia Tech domain knowledge.
 def georgiatech(df, gt_context):
-
     df = df.copy()
 
     # Calculate the distance of each bus from its stop.
@@ -95,5 +92,25 @@ def georgiatech(df, gt_context):
         df["lonDistance"] = np.vectorize(coordError)(df["route"], df["stop"], df["busLong"], 1)
         df["distance"] = np.sqrt(df["latDistance"]**2 + df["lonDistance"]**2)
         df.drop(["latDistance", "lonDistance"], axis=1, inplace=True)
+    
+    # Class mode is for before or after all classes, 1 for during class, 2 for between classes.
+    def classFinder(dow, mid):
+        if dow == 0 or dow == 2:
+            sched = gt_context.mw_class_schedule
+        elif dow == 1 or dow == 3:
+            sched = gt_context.tr_class_schedule
+        elif dow == 4:
+            sched = gt_context.f_class_schedule
+        else:
+            return 0
+        fp = sched[0]
+        lp = sched[-1]
+        if mid < fp[0] or mid > lp[1]:
+            return 0
+        for pair in sched:
+            if mid >= pair[0] and mid <= pair[1]:
+                return 1
+        return 2
+    df["classMode"] = np.vectorize(classFinder)(df["dayOfWeek"], df["minutesIntoDay"])    
 
     return df
