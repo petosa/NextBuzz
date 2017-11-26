@@ -7,6 +7,7 @@ from json import dumps
 
 app = Flask(__name__, static_url_path="")
 CORS(app)
+backend.start_collector()
 
 @app.route("/")
 def index():
