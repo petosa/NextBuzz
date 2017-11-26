@@ -8,6 +8,8 @@ from json import dumps
 app = Flask(__name__, static_url_path="")
 CORS(app)
 
+print "hi1"
+
 @app.route("/")
 def index():
     return render_template("index.html", stops=backend.get_stop_names())
@@ -43,7 +45,11 @@ def get_colors():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
+    print "hi3"
+
 
 def get_app():
+    print "hi2"
+
     backend.start_collector()
     return app
