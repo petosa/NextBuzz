@@ -87,6 +87,10 @@ def learn(train, test, learner, kbest, do_pca, pca_only):
     test_sta = test_left["secondsToArrival"]
 
     train_left, train_max, train_min = normalize(train_left)
+    print("Max values from normalization:")
+    print(list(train_max))
+    print("Min values from normalization:")
+    print(list(train_min))
     test_left, train_max, train_min = normalize(test_left, max=train_max, min=train_min)
 
     if do_pca and pca_only:

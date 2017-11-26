@@ -31,6 +31,16 @@ def get_data(stop):
     results = backend.get_latest(stop)
     return dumps(results)
 
+@app.route("/gettop/<string:stop>/<string:route>/")
+def get_top_n(stop, route):
+    results = backend.get_top(stop, route, 400)
+    return dumps(results)
+
+@app.route("/getcolors")
+def get_colors():
+    results = backend.get_colors()
+    return dumps(results)
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
 

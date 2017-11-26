@@ -1,28 +1,35 @@
 import sqlite3
 import sys
-sys.path.insert(0, "..")
-from georgiatech import GeorgiaTech
 import math
 import os
+import time
+sys.path.insert(0, "..")
+from georgiatech import GeorgiaTech
+import sql
+
 
 gt = GeorgiaTech()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(BASE_DIR, "../database.db")
-conn = sqlite3.connect(db_path)
+
+
+def get_colors():
+    return gt.route_colors
 
 # Returns the latest bus data for a stop
 def get_latest(stop):
-    res = []
     stops = "(" + str(gt.stop_names[stop])[1:-1] + ")"
-    for route in gt.all_routes:
-        c = conn.cursor()
-        query = "SELECT * FROM NEXTBUS WHERE route=\'{}\' and stop IN {} ORDER BY timestamp DESC LIMIT 1".format(route, str(stops))
-        print query
-        result = c.execute(query)
-        row = next(result, None)
-        if row:
-            res.append(row)
-    return res
+    query = "SELECT * FROM (SELECT * FROM NEXTBUS where stop in {}) GROUP BY route, stop HAVING MAX(timestamp)".format(str(stops))
+    print query
+    results = sql.query_read(query)
+    # Only include results that occured less thatn 5 mins ago
+    results = [x for x in results if  int(time.time()) - x[0] < 200]
+    return results
+
+def get_top(stop, route, n):
+    query = "SELECT * FROM NEXTBUS where stop=\'{}\' and route = \'{}\' order by timestamp DESC limit {}".format(stop, route, n)
+    print query
+    return sql.query_read(query)
 
 def get_stop_names():
     return gt.stop_names
@@ -41,4 +48,4 @@ def find_closest_stop(lat, lon):
             return key
 
 if __name__ == "__main__":
-    print get_latest("Recreation Center")
+    print get_top("Recreation Center", "red", 10)

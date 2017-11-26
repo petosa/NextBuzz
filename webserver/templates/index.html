@@ -4,14 +4,19 @@
    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
    crossorigin="anonymous"></script>
 <script src="semantic/dist/semantic.min.js"></script>
-<script src="js/script.js"></script>
-<body class="template">
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<body class="">
    <div class="ui massive fixed inverted borderless menu">
       <div class="ui container">
          <a class="header item" href="#">NextBuzz</a>
       </div>
    </div>
-   <div class="ui main center aligned text container">
+   <!-- class="ui main center aligned text container" -->
+   <div style="margin:80px" class="ui main center aligned text">
       <div class="ui left aligned yellow segment">
          <h1 class="ui huge header">
             NextBuzz
@@ -29,6 +34,9 @@
                </select>
             </div>
             <div class="column right aligned">
+               <button onclick="changeFunc()" class="circular ui huge icon button"  data-tooltip="Refresh predictions.">
+                <i class="icon refresh"></i>
+               </button>
                <button onclick="geoFindMe()" class="circular ui yellow huge icon button"  data-tooltip="Use my location to find nearest stop.">
                <i class="icon marker"></i>
                </button>
@@ -45,11 +53,14 @@
             <tbody>
             </tbody>
          </table>
+         <span id="outer">
+           <h2 id="container">Select a stop to view predictions.</h2>
+         </span>         
       </div>
    </div>
    <style type="text/css">
       .main.container {
-      margin-top: 7em;
+      margin-top: 5em;
       }
       p.lead {
       font-size: 1.3em;
@@ -63,5 +74,5 @@
    $('.ui.dropdown')
    .dropdown()
    ;
-   
 </script>
+<script src="js/script.js"></script>

@@ -3,7 +3,7 @@ from sklearn.feature_selection import SelectKBest, f_regression, mutual_info_reg
 import pandas as pd
 
 def pca(data):
-    clf = PCA(n_components=1)
+    clf = PCA(n_components=20)
     X_train=clf.fit_transform(data)
     return pd.DataFrame(X_train).add_prefix("pca")
 

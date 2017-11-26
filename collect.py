@@ -4,47 +4,42 @@ import time
 import os
 import log
 import traceback
-from georgiatech import GeorgiaTech
 import sqlite3
-import os
+import sql
+import predict
+from georgiatech import GeorgiaTech
+from sklearn.externals import joblib
 
-print("v4")
+print("v4") # Print current iteration/version for sanity
 
-session = requests.Session()
+session = requests.Session() # Construct a NextBus API compliant requester
 session.headers.update({"User-Agent": "NextBuzz (nick.petosa@gmail.com)"})
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(BASE_DIR, "database.db")
-conn = sqlite3.connect(db_path)
+model = joblib.load('model_good2.pkl') # Load in the regression model
+sql.create_table() # Create database infra
+gt = GeorgiaTech() # Instatiate context object
 
-gt = GeorgiaTech()
-header = "timestamp,stop,route,kmperhr,busID,numBuses,busLat,busLong,layover,isDeparture,predictedArrival,secondsToArrival,temperature,pressure,humidity,visibility,weather,wind,cloudCoverage"
-
-while True:
+while True: # Big loop for scraping bus data.
     try:
-        time.sleep(5)
+        time.sleep(5) # Pause between requests
 
-        with open("predictions.csv", "a") as file:
-            if os.stat("predictions.csv").st_size == 0:
-                file.write(header)
-                file.write("\n")
-
+        # Collect weather data
         weather = session.get("https://api.openweathermap.org/data/2.5/weather?q=atlanta&APPID=00c4c655fa601a48dc5bf4f34c4ce86a")
-
-        if weather.status_code != 200:
+        if weather.status_code != 200: # Restart loop if we can't get weather data.
             continue
-
         weather_json = weather.json()
 
+        # Collect and parse NextBus data
         for route in gt.all_routes:
-            time.sleep(2)
+            time.sleep(2) # Pause between queries
+
             r = session.get("https://gtbuses.herokuapp.com/agencies/georgia-tech/routes/" + route + "/predictions")
             r2 = session.get("https://gtbuses.herokuapp.com/agencies/georgia-tech/routes/" + route + "/vehicles")
-
             if r.status_code != 200 or r2.status_code != 200:
                 continue
-            
             stops = xmltodict.parse(r.text)["body"]["predictions"]
+
+            # All stops for this route
             for stop in stops:
                 stop_name = stop["@stopTag"]
                 route_name = stop["@routeTag"]
@@ -53,6 +48,7 @@ while True:
                 if "direction" not in stop:
                     log.log("No predictions for stop " + stop_name + " for route " + route_name)
                     continue
+                
                 stop_predictions = stop["direction"]["prediction"]
                 if type(stop_predictions) == list:
                     prediction = stop_predictions[0]
@@ -96,8 +92,8 @@ while True:
                 row.append(numbuses) # Number of buses
                 row.append(buslat) # Latitude of bus
                 row.append(buslong) # Longitude of bus
-                row.append(layover) # Is this bus' prediction inacurrate?
-                row.append(is_departure) # Is the bus waiting?
+                row.append(str(layover)) # Is this bus' prediction inacurrate?
+                row.append(str(is_departure)) # Is the bus waiting?
                 row.append(arrival_epoch) # Predicted timestamp of arrival
                 row.append(seconds_arrival) # Seconds to arrival prediction
                 row.append(weather_json["main"]["temp"]) # Temp in kelvin
@@ -108,6 +104,11 @@ while True:
                 row.append(weather_json["wind"]["speed"]) # Wind speed
                 row.append(weather_json["clouds"]["all"]) # Cloud coverage
 
+                # Use these features to predict actualSecondsToArrival
+                my_prediction = predict.predict(model, row)[0]
+                row.append(my_prediction
+                )
+                print(str(my_prediction) + " from " + str(seconds_arrival))
                 output = "("
                 for item in row:
                     if isinstance(item, basestring):
@@ -119,14 +120,9 @@ while True:
 
                 query = "INSERT INTO NEXTBUS VALUES " + output
                 print(query)
+                sql.query_write(query)
 
-                c = conn.cursor()
-                c.execute(query)
-
-                with open("predictions.csv", "a") as file:
-                    file.write(str(row)[1:len(str(row))-1].replace(" ","").replace("\'","") + "\n")
-
-                log.log("Logged for " + route_name + " at " + stop_name)
+                log.log("Inserted for " + route_name + " at " + stop_name)
 
     except Exception as e:
         log.log("Exception:")
