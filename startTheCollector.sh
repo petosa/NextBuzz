@@ -1,1 +1,1 @@
-python collector.py
+python collect.py
