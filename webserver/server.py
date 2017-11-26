@@ -8,10 +8,6 @@ from json import dumps
 app = Flask(__name__, static_url_path="")
 CORS(app)
 
-@app.before_first_request
-def activate_job():
-    backend.start_collector()
-
 @app.route("/")
 def index():
     return render_template("index.html", stops=backend.get_stop_names())

@@ -5,17 +5,12 @@ import os
 import time
 sys.path.insert(0, "..")
 from georgiatech import GeorgiaTech
-import collect
 import sql
 from threading import Thread
 
 gt = GeorgiaTech()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(BASE_DIR, "../database.db")
-
-def start_collector():
-    thread = Thread(target=collect.run)
-    thread.start()
 
 def get_colors():
     return gt.route_colors
