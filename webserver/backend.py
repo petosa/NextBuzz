@@ -13,8 +13,9 @@ gt = GeorgiaTech()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(BASE_DIR, "../database.db")
 
-thread = Thread(target=collect.run)
-thread.start()
+def start_collector():
+    thread = Thread(target=collect.run)
+    thread.start()
 
 def get_colors():
     return gt.route_colors
