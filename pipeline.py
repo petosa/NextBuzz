@@ -22,5 +22,5 @@ df = fe.temporal(df)
 df = fe.georgiatech(df, gt_context)
 
 df.to_csv("dataset.csv", index=False)
-df.iloc[100000:200000,:].to_csv("dataset_small.csv", index=False)
+df.iloc[300000:700000,:].to_csv("dataset_small.csv", index=False)
 

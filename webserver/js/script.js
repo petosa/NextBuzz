@@ -1,4 +1,5 @@
 
+
 // Runs on page load. Obtains the colors 
 var settings = {
   "async": true,
@@ -62,19 +63,9 @@ $.ajax(settings).done(function (response) {
 // Triggers when user clicks on the marker icon. Attempts to acquire user's
 // latitude and longitude, and then makes a request to the backend to
 // find the nearest stop. On success, sets the stop in the dropdown.
-function geoFindMe() {
-  var output = document.getElementById("out");
 
-  if (!navigator.geolocation){
-    console.log("Geolocation is not supported by your browser");
-    return;
-  }
-
-  function success(position) {
-    var latitude  = position.coords.latitude;
-    var longitude = position.coords.longitude;
-    var url = "/gps?lat=" + latitude + "&lon=" + longitude;
-    
+function withCoords(latitude, longitude) {
+  var url = "/gps?lat=" + latitude + "&lon=" + longitude;    
 	console.log(url);
 	var settings = {
 	  "async": true,
@@ -90,8 +81,42 @@ function geoFindMe() {
 
   }
 
+function googleBackup() {
+  var settings = {
+    "async": true,
+    "crossDomain": true,
+    "url": "https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyBrmRpbN22V75_aEjLxdFKkgxaods-_I5I",
+    "method": "POST",
+    "headers": {}
+  }
+  
+  $.ajax(settings).done(function (response) {
+
+    withCoords(response.location.lat, response.location.lng);
+  });
+}
+
+function geoFindMe() {
+  var output = document.getElementById("out");
+
+  if (!navigator.geolocation){
+    console.log("Geolocation is not supported by your browser");
+    googleBackup();
+    return;
+  }
+
+  function success(position) {
+    var latitude  = position.coords.latitude;
+    var longitude = position.coords.longitude;
+    withCoords(latitude, longitude);
+  }
+    
+
+
+
   function error() {
     console.log("Unable to retrieve your location");
+    googleBackup();
   }
 
   navigator.geolocation.getCurrentPosition(success, error);

@@ -55,11 +55,11 @@ config = {
 }
 #df.to_csv("dataset_clean.csv", index=False)
 
-learner1 = tree.DecisionTreeRegressor(min_samples_split=50)
-learner = ensemble.BaggingRegressor(base_estimator=learner1, n_estimators=60)
+learner1 = tree.DecisionTreeRegressor(min_samples_split=75)
+learner = ensemble.BaggingRegressor(base_estimator=learner1, n_estimators=100)
 #supervised.rolling_kfold(df, learner, config, partitions=10, window=6)
 model = supervised.train_test_split(df, learner, config, percent_train=.90)
 #
 # 
 # 
-joblib.dump(model, 'model_golden50.pkl') 
+joblib.dump(model, 'model_golden75.pkl') 
