@@ -1,0 +1,49 @@
+Sample statistics:
+985511 duplicates, leaving 2058413 unique instances.
+1400 total sessions detected.
+20 days of data.
+68123 approaches detected.
+48.6592857143 average loops per day for all routes.
+Average loops per day, route breakdown
+blue       59.252101
+green      40.522321
+night      13.121849
+red        72.267857
+tech       50.375000
+trolley    54.31428
+World fidelity: 0.949635218649
+
+Data point breakdown (pi chart):
+20% blue
+16.8% green
+5% night
+20% red
+2.6% tech
+35.4% trolley
+
+Weather:
+The reason why using weather data as features sucks is because there is not enough variation in temperature, pressure, humidity over a 20 day period. Our data does not capture all necessary permutations of weather data points with all other features. The result is that if for one wee
+
+NextBus error:
+(Not absolute)
+mean: 163 
+std: 413.73
+(Absolute)
+mean: 187.799
+std: 377.758
+{'mae': 187.79867470523365, 'medae': 78.0, 'rmse': 421.86318227725593}
+
+My error:
+(Not absolute)
+mean: -29
+std: 395.425
+(Absolute)
+mean: 177.684 
+std: 354.461
+{'mae': 177.68443722721653, 'medae': 76.78032400724328, 'rmse': 396.5021222393674}
+
+
+
+
+
+

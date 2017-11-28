@@ -16,8 +16,7 @@ import pandas as pd
 # rolling_kfold will average the results of these runs and return them to you.
 def rolling_kfold(data, learner, config, partitions=5, window=3):
     partition_size = data.shape[0]/partitions
-    print("Training set size: " + str(partition_size*(window - 1)))
-    print("Test set size: " + str(partition_size))
+    
     window_start = 0
     count = 0
     nbtr_final = pd.DataFrame()
@@ -26,7 +25,7 @@ def rolling_kfold(data, learner, config, partitions=5, window=3):
     te_final = pd.DataFrame()
     for iteration in range(0, partitions - window + 1):
         print("\nNEW ITERATION")
-        left = window_start
+        left = 0
         middle = window_start + partition_size*(window-1)
         right = window_start + partition_size*(window)
         training_set = data.iloc[left:middle]
@@ -49,6 +48,7 @@ def rolling_kfold(data, learner, config, partitions=5, window=3):
     print("TEST FINAL")
     print(te_final.mean())
     print("*"*20)
+    print((nbte_final.mean() - te_final.mean())/nbte_final.mean())
 
 def train_test_split(data, learner, config, percent_train=.80):
     top = 0
@@ -77,6 +77,9 @@ def learn(train, test, learner, kbest, do_pca, pca_only):
     train_right = train.iloc[:,-1].reshape((-1,1))
     test_left = test.iloc[:,:-1]
     test_right = test.iloc[:,-1].reshape((-1,1))
+
+    print("Training set size: " + str(train_left.shape[0]))
+    print("Test set size: " + str(test_left.shape[0]))
 
     selected = ft.kbest(train_left, train_right, k=kbest)
     train_left = train_left[selected]

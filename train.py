@@ -5,19 +5,21 @@ from sklearn.externals import joblib
 
 df = pd.read_csv("dataset.csv")
 
-#df = df.iloc[100000:200000,:].reset_index(drop=True)
+#df = df.iloc[0:1000,:].reset_index(drop=True)
 
 # Features to train on
 subset = [
     "secondsToArrival",
     "distance",
     "layover",
-    "isDeparture",
-    "classMode",
-    "morningRush",
-    "eveningRush",
+    #"isDeparture",
+    #"classMode",
+    #"morningRush",
+    #"eveningRush",
     "minutesIntoDay",
-    "kmperhr"
+    #"kmperhr",
+    #"dayOfWeek",
+    #"pressure"
 ]
 '''
     "kmperhr",
@@ -55,11 +57,8 @@ config = {
 }
 #df.to_csv("dataset_clean.csv", index=False)
 
-learner1 = tree.DecisionTreeRegressor(min_samples_split=75)
-learner = ensemble.BaggingRegressor(base_estimator=learner1, n_estimators=100)
-#supervised.rolling_kfold(df, learner, config, partitions=10, window=6)
-model = supervised.train_test_split(df, learner, config, percent_train=.90)
-#
-# 
-# 
-joblib.dump(model, 'model_golden75.pkl') 
+learner1 = tree.DecisionTreeRegressor(criterion="mse")# , min_samples_split=500)
+learner = ensemble.BaggingRegressor(base_estimator=learner1, max_samples=.03, n_estimators=150)
+model = supervised.train_test_split(df, learner, config, percent_train=.80)
+joblib.dump(model, 'longnight.pkl')
+supervised.rolling_kfold(df, learner, config, partitions=10, window=5)

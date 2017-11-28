@@ -89,6 +89,6 @@ def plot_distance(data):
     plt.legend()
     for index, row in frame.iterrows():
         temp = frame["timestamp"].astype(np.int64)
-        if row["validated"]:
-            plt.axvline(x=temp[index], linewidth=2, c="g",linestyle='--')
+        #if row["validated"]:
+            #plt.axvline(x=temp[index], linewidth=2, c="g",linestyle='--')
     plt.show()
