@@ -1,5 +1,8 @@
 # NextBuzz
 Using machine learning to predict Georgia Tech bus arrival times
+Try the live demo, if it's still up:
+http://nextbuzz.ddns.net:8000
+![Screenshot](https://i.imgur.com/pXEAQEb.png "Screenshot from the web app")
 
 ## Overview
 The purpose of this guide is to instruct you how do use all code that ships with NextBuzz, from exploratory analysis to
