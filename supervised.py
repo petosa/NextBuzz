@@ -11,8 +11,8 @@ import pandas as pd
 # partitions=5, window = 3. ? means training set, ! means testing set.
 # These are the operations that will run.
 # [?|?|!| | ]
-# [ |?|?|!| ]
-# [ | |?|?|!]
+# [?|?|?|!| ]
+# [?|?|?|?|!]
 # rolling_kfold will average the results of these runs and return them to you.
 def rolling_kfold(data, learner, config, partitions=5, window=3):
     partition_size = data.shape[0]/partitions
