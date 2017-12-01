@@ -7,19 +7,23 @@ import traceback
 import sqlite3
 import sql
 import predict
+import sys
 from georgiatech import GeorgiaTech
 from sklearn.externals import joblib
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(BASE_DIR, "model.pkl")
 
-def run():
+def run(make_prediction=True):
+    print make_prediction
     print("v4") # Print current iteration/version for sanity
 
     session = requests.Session() # Construct a NextBus API compliant requester
     session.headers.update({"User-Agent": "NextBuzz (nick.petosa@gmail.com)"})
 
-    model = joblib.load(model_path) # Load in the regression model
+    if make_prediction:
+        model_path = os.path.join(BASE_DIR, "model.pkl")
+        model = joblib.load(model_path) # Load in the regression model
+        
     sql.create_table() # Create database infra
     gt = GeorgiaTech() # Instatiate context object
 
@@ -108,11 +112,12 @@ def run():
                     row.append(weather_json["wind"]["speed"]) # Wind speed
                     row.append(weather_json["clouds"]["all"]) # Cloud coverage
 
-                    # Use these features to predict actualSecondsToArrival
-                    my_prediction = predict.predict(model, row)[0]
-                    row.append(my_prediction
-                    )
-                    print(str(my_prediction) + " from " + str(seconds_arrival))
+                    if make_prediction:
+                        # Use these features to predict actualSecondsToArrival
+                        my_prediction = predict.predict(model, row)[0]
+                        row.append(my_prediction)
+                        print(str(my_prediction) + " from " + str(seconds_arrival))
+
                     output = "("
                     for item in row:
                         if isinstance(item, basestring):
@@ -133,4 +138,10 @@ def run():
             log.log(traceback.format_exc())
 
 if __name__ == "__main__":
-    run()
+    print sys.argv
+    if len(sys.argv) == 1:
+        run()
+    elif len(sys.argv) == 2:
+        run(make_prediction="True" == sys.argv[1])
+    else:
+        print("collect.py <make_prediction>")

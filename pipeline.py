@@ -9,7 +9,7 @@ import unsupervised as unsupervised
 gt_context = GeorgiaTech()
 
 # Load in data
-file_name = "data/big_predictions.csv"
+file_name = "data/rawdata.csv"
 df = pd.read_csv(file_name)
 
 # Clean our data
@@ -22,5 +22,3 @@ df = fe.temporal(df)
 df = fe.georgiatech(df, gt_context)
 
 df.to_csv("dataset.csv", index=False)
-df.iloc[300000:700000,:].to_csv("dataset_small.csv", index=False)
-
