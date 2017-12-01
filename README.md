@@ -28,6 +28,9 @@ Once you have collected data, export the section of the raw data that you want t
 load it into `pipeline.py` (looks in `data/rawdata.csv` by default) which will remove duplicates, turn strings into one-hot encodings, and engineer new features
 related to arrival detection, time, and Georgia Tech domain knowledge. The output file will be `dataset.csv`.
 
+## Exploratory Data Analysis
+In `explore.py`, the `dataset.csv` you just created is loaded in. Assuming you have matplotlib installed, the script will then plot several features against the class to search for any correlations.
+
 ## Creating a Model
 In `train.py`, the `dataset.csv` you just created is loaded in. From here, define the learner you want to apply to your data
 using scikit-learn's API, and pass that learner in a call to either `supervised.rolling_kfold` for cross-validated error analysis,
